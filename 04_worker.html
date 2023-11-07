@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>web worker</title>
+    </head>
+    <body>
+        
+        <!-- 무한반복문을 실행하는 버튼. 단, 스레드를 사용하지 않고... 문제 발생! - 화면을 그려내지도 못함.. 결국. ANR 에러..발생[페이지가 응답하지 않아요...] -->
+        <button onclick="aaa()">무한 반복 작업!</button>
+        <h3 id="h1">0</h3>
+
+        <script>            
+            function aaa(){               
+                var n=0;                
+                while(true){
+                    n++;
+                    document.getElementById('h1').innerHTML= n;
+                }
+            }
+        </script>
+
+        <hr>
+        <!-- 워커를 이용한 비동기 작업 처리.. 단, 웹 서버에서만 동작함.. -->
+
+        <button onclick="bbb()">start worker</button>
+        <button onclick="ccc()">stop worker</button>
+        <button onclick="alert('clicked')">메인 스레드의 처리가능여부를 파악하는 버튼</button>
+        <h3 id="h2">0</h3>
+        
+
+        <script>
+
+            var w;
+            function bbb(){
+                if(w==undefined){
+                    w= new Worker("./worker.js"); //생성하면 자동 일 시작!! - 워커의 작업은 별도 .js문서에 작성
+                    //워커가 보낸 메세지를 받기 -- 콜백함수
+                    w.onmessage= function( event ){
+                        document.getElementById('h2').innerHTML= event.data;
+                    }
+
+                }else{
+                    alert("워커가 이미 존재함!");
+                }  
+            }
+
+            function ccc(){
+                w.terminate();
+                w=undefined;
+            }
+
+        </script>
+
+    </body>
+</html>
